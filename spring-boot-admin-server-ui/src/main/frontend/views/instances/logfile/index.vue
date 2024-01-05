@@ -33,10 +33,14 @@
                          @click="scrollToBottom"
         />
       </div>
-      <a :href="`instances/${instance.id}/actuator/logfile`" class="logfile-view-action button" target="_blank">
+<!--      <a :href="`instances/${instance.id}/actuator/logfile`" class="logfile-view-action button" target="_blank">
         <font-awesome-icon icon="download" />&nbsp;
         <span v-text="$t('instances.logfile.download')" />
-      </a>
+      </a>-->
+      <button class="button is-primary" @click="downloadLogFile">
+        <font-awesome-icon icon="download" />&nbsp;
+        <span v-text="$t('instances.logfile.download')" />
+      </button>
     </div>
 
     <div :class="{'log-viewer--wrap-lines': wrapLines}" class="log-viewer">
@@ -132,6 +136,16 @@ export default {
     },
     scrollToBottom() {
       document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight;
+    },
+    async downloadLogFile() {
+      const vm = this;
+      vm.errorDownload = null;
+      try {
+        await this.instance.downloadLogFile();
+      } catch (error) {
+        console.warn('Downloading log file failed.', error);
+        vm.errorDownload = error;
+      }
     }
   },
   install({viewRegistry}) {
